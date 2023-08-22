@@ -6,7 +6,8 @@ public class Main {
 
 		int N = sc.nextInt();
 		int[] res = new int[N + 1];
-		int[][] arr = new int[102][102];
+		int[][] arr = new int[101][101];
+		
 		for (int i = 1; i <= N; i++) {
 
 			int x = sc.nextInt();
@@ -22,8 +23,8 @@ public class Main {
 				}
 			}
 		}
-		for (int r = 0; r <= 101; r++) {
-			for (int c = 0; c <= 101; c++) {
+		for (int r = 0; r < 101; r++) {
+			for (int c = 0; c < 101; c++) {
 				res[arr[r][c]]++;
 			}
 		}
