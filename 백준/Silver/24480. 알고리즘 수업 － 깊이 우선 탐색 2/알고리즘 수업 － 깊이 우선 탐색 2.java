@@ -3,56 +3,103 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main {
-	public static int cnt = 1;
-	public static boolean [] visit;
-	public static int [] graph;//그래프 순서 저장 배열
-	public static ArrayList<ArrayList<Integer>> temp = new ArrayList<>();;
+class vertex implements Comparable<vertex>{
+	int v; //출발 정점
+	int u; //도착 정점
 	
-	public static void main(String[] args) throws IOException {
+	public vertex() {
+
+	}
+	
+	public vertex(int v, int u) {
+		this.v = v;
+		this.u = u;
+	}
+
+	@Override
+	public int compareTo(vertex o) {
+		// TODO Auto-generated method stub
+		if(v == o.v) {
+			return o.u - u;
+		}
+		
+		return o.v - v;
+	}
+
+	@Override
+	public String toString() {
+		return "vertex [v=" + v + ", u=" + u + "]";
+	}
+	
+	
+	
+}
+
+public class Main {
+	
+	public static int N, M, cnt;
+	public static int [] order;
+	public static boolean [] visit;
+	public static List<List<vertex>> graph = new ArrayList<>();
+	public static StringTokenizer st;
+	
+	public static void main(String[] args) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
 		
-		int N = Integer.parseInt(st.nextToken());
-		int M = Integer.parseInt(st.nextToken());
-		int R = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(br.readLine());
 		
-		visit = new boolean[N+1];//방문 확인 배열
-		graph = new int [N+1];//
+		N = Integer.parseInt(st.nextToken());//정점의 개수
+		M = Integer.parseInt(st.nextToken());//간선의 개수
+		int start = Integer.parseInt(st.nextToken());//시작 정점
 		
-		for(int i=0; i<=N; i++) {
-			temp.add(new ArrayList<>());//N의 개수만큼 내부에 리스트를 추가
+		order = new int [N+1];
+		visit = new boolean [N+1];
+		
+		for(int i = 0; i < N+1; i++) {
+			graph.add(new ArrayList<vertex>());
 		}
 		
-		for(int i=1; i<=M; i++) {
+		for(int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-			
-			//방향이 없기 때문에 쌍방으로 저장
-			temp.get(u).add(v);
-			temp.get(v).add(u);
+			int v1 = Integer.parseInt(st.nextToken());
+			int v2 = Integer.parseInt(st.nextToken());
+			vertex tmp1 = new vertex(v1, v2);
+			vertex tmp2 = new vertex(v2, v1);
+			graph.get(v1).add(tmp1);
+			graph.get(v2).add(tmp2);
 		}
-		dfs(R);
+		for(int i = 1; i < N+1; i++) {
+			Collections.sort(graph.get(i));
+		}
+//		System.out.println(graph.toString());
 		
-		// 노드 구성 완료
-		for(int i = 1; i<=N; i++) {//시작점
-			System.out.println(graph[i]);
+		cnt = 1;
+		dfs(start);
+		
+		for(int i = 1; i < order.length; i++) {
+			System.out.println(order[i]);
 		}
 	}
-	public static void dfs(int R) {//현재 노드 (현재의 시작점을 받음)
-		visit[R] = true;//방문처리
-		graph[R] = cnt++;//순번 저장?
+	
+	public static void dfs(int start) {
+		//언제 끝?
+		//이미 방문했거나
+		//더이상 연결 된 노드가 없으면 끝
 		
-		Collections.sort(temp.get(R), Collections.reverseOrder());	//R번째 리스트를 내림차순 정렬
+		visit[start] = true;
+		order[start] = cnt;
 		
-		for(Integer value : temp.get(R)) {
-			if(!visit[value]) {
-				dfs(value);
+		for(int i = 0; i < graph.get(start).size(); i++) {
+			int next = graph.get(start).get(i).u;
+			
+			if(!visit[next]) {
+				cnt++;
+//				System.out.println("next : " + next + "cnt : " + cnt);
+				dfs(next);
 			}
 		}
-		return;
 	}
 }
