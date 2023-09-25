@@ -1,109 +1,83 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.Scanner;
 
 public class Main {
+	static int W, H; // 너비, 높이
+	static int[][] map; // 2차원 배열
+	static boolean[][] visited;
 
-	public static StringTokenizer st;
-	public static int[][] map;
-	public static boolean[][] visit;
-	public static int W, H, cnt;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
+	// 8방 탐색
+	static int[] dr = { -1, 1, 0, 0, 1, 1, -1, -1 };
+	static int[] dc = { 0, 0, -1, 1, -1, 1, -1, 1 };
 
-		st = new StringTokenizer(br.readLine());
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 
-		W = Integer.parseInt(st.nextToken());// 너비
-		H = Integer.parseInt(st.nextToken());// 높이
-		
-		int tc = 0;
-		
-		while (!(W + H == 0)) {// 너비 높이가 마지막에 0 0으로 나오면 종료
-			// 지도 크기 설정
-			
+		while (true) {
+			W = sc.nextInt();
+			H = sc.nextInt();
+
+			if (W == 0 && H == 0)
+				break;
+
 			map = new int[H][W];
-			visit = new boolean[H][W];
-			
-			tc++;
-			cnt = 0;// 섬의 갯수
+			visited = new boolean[H][W]; 
 
-			// 지도 정보 입력
-			for (int r = 0; r < H; r++) {
-				st = new StringTokenizer(br.readLine());
-				for (int c = 0; c < W; c++) {
-					map[r][c] = Integer.parseInt(st.nextToken());
-					if (map[r][c] == 0) {// 만약 바다면 갈 수 없으니까 visit - true 체크
-						visit[r][c] = true;
-					}
-				}
-			}
-			// 섬 개수 찾기(바다는 전부 true라서 false일때 탐색 ㄱ)
+			// 2차원 배열 입력 받기
 			for (int r = 0; r < H; r++) {
 				for (int c = 0; c < W; c++) {
-					if (!visit[r][c]) {// 육지면 지금 밟은 자리 true로 체크하고 나아감
-						cnt++;
-						check(r, c);
-					}
+					map[r][c] = sc.nextInt();
+
 				}
 			}
 
-			sb.append(cnt).append("\n");
+			int cnt = 0; // 섬의 개수
 
-			// 지도 크기 재설정
-			st = new StringTokenizer(br.readLine());
-			W = Integer.parseInt(st.nextToken());
-			H = Integer.parseInt(st.nextToken());
+			// 2차원 배열을 행 우선 순회하면서
+			// 방문하지 않은 1을 만난 경우.
+			// 그 (r, c)부터 DFS탐색을 시작
+			for (int r = 0; r < H; r++) {
+				for (int c = 0; c < W; c++) {
+					if (map[r][c] == 1 && !visited[r][c]) {
+						visited[r][c] = true; // 시작점을 방문처리 후
+						dfs(r, c); // 시작점부터 탐색 시작					
+						cnt++; // 새로운 그래프를 발견했으므로.
+					}
+				}
+			}
+            
+			System.out.println(cnt);
+			cnt = 0; 
+		}
 		
-		}
-		System.out.println(sb);
 	}
 
-	public static void check(int r, int c) {// 어디까지가 섬인지 체크
-		visit[r][c] = true;
+	private static void dfs(int r, int c) {
+		// 현재 정점 (r, c)
+		// 이웃한 정점 중에서 아직 방문하지 않은 곳이 있다면
+		// 그 정점으로 탐색을 계속 해 나가면 됨(재귀)
+		// 재귀 -> 스택 -> dfs
 
-		// 상하좌우 대각선으로 움직을 수 있음
-		// 상
-		if (idx_check(r - 1, c) && !visit[r - 1][c]) {// 위에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r - 1, c);
+		// 이웃한 정점 : 후보 8개 -> 2차원 배열 범위 안 -> 1인 곳
+		// & 방문하지 않은 경우
+
+
+		for (int d = 0; d < 8; d++) {
+			int nr = r + dr[d];
+			int nc = c + dc[d];
+			if (nr >= 0 && nr < H && nc >= 0 && nc < W && map[nr][nc] == 1 && !visited[nr][nc]) {
+				visited[nr][nc] = true;
+				dfs(nr, nc); // 시작점부터 탐색 시작
+
+			}
 		}
-		// 하
-		if (idx_check(r + 1, c) && !visit[r + 1][c]) {// 아래 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r + 1, c);
-		}
-		// 좌
-		if (idx_check(r, c - 1) && !visit[r][c - 1]) {// 왼쪽에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r, c - 1);
-		}
-		// 우
-		if (idx_check(r, c + 1) && !visit[r][c + 1]) {// 오른쪽에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r, c + 1);
-		}
-		// 우상
-		if (idx_check(r - 1, c + 1) && !visit[r - 1][c + 1]) {// 오른쪽 위에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r - 1, c + 1);
-		}
-		// 우하
-		if (idx_check(r + 1, c + 1) && !visit[r + 1][c + 1]) {// 오른쪽 아래에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r + 1, c + 1);
-		}
-		// 좌상
-		if (idx_check(r - 1, c - 1) && !visit[r - 1][c - 1]) {// 왼쪽 위에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r - 1, c - 1);
-		}
-		// 좌하
-		if (idx_check(r + 1, c - 1) && !visit[r + 1][c - 1]) {// 왼쪽 아래에 갈 수 있고 방문한 적 없으면 ㄱㄱ
-			check(r + 1, c - 1);
-		}
+		
+
 
 	}
 
-	public static boolean idx_check(int r, int c) {// r - H, c - W
-		if (0 <= r && r < H && 0 <= c && c < W) {
-			return true;
-		}
-		return false;
-	}
+	
+
+	
+
 }
