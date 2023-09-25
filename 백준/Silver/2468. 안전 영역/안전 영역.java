@@ -1,89 +1,100 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
+	static int N;
+	static int[][] map;
+	static int max;
+	static int o;
+	static int cnt; 
+	static boolean[][] visited;
 
-	public static StringTokenizer st;
-	public static int cnt, max, N;
-	public static int[][] map;
-	public static boolean[][] visit;
+	static int[] dr = { -1, 1, 0, 0 };
+	static int[] dc = { 0, 0, 1, -1 };
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 
-		max = Integer.MIN_VALUE;
-		N = Integer.parseInt(br.readLine());
+		// 2차원 배열 입력받기
+
+		N = sc.nextInt();
 
 		map = new int[N][N];
-		visit = new boolean[N][N];
 
-		for (int r = 0; r < N; r++) {
-			st = new StringTokenizer(br.readLine());
-			for (int c = 0; c < N; c++) {
-				map[r][c] = Integer.parseInt(st.nextToken());
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				map[i][j] = sc.nextInt();
+			}
+
+		}
+
+		// 0 1 2 3 4 5 6 7 8 max가 9 면
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (map[i][j] > max) {
+					max = map[i][j];
+				}
 			}
 		}
 
-		int deep = 0;// 수심
+		// 이 2차원 배열에서 제일 큰 수 찾기
 
-		cnt = -1;
+		// 최대값을 넣을 배열
+		int[] arr2 = new int[max];
 
-		while (cnt != 0) {// 어처피 물 차오를수록 더 많이 갈라짐
-			cnt = 0;
-			find(deep);
-			visit = new boolean[N][N];
-			max = Math.max(max, cnt);
-			deep++;
+		cnt = 0; // 안전영역의 개수
+
+		// 1~최대높이 만큼 비가 오게 함
+		for (o = 1; o <= max; o++) {
+			visited = new boolean[N][N];
+			for (int r = 0; r < N; r++) {
+				for (int c = 0; c < N; c++) {
+
+					if (map[r][c] > o &&!visited[r][c] ) {
+//						visited[r][c] = true; // 시작점 방문처리
+						dfs(r, c);
+						
+						arr2[o - 1]++;
+					}
+
+				}
+			}
 			
+//			System.out.println(Arrays.toString(arr2));
+			
+//			System.out.println(Arrays.deepToString(visited));
+
 		}
 
-		System.out.println(max);
+//		System.out.println(Arrays.toString(arr2));
 
-	}
+		int maxx = 1;
 
-	public static void find(int deep) {
-		for (int r = 0; r < N; r++) {
-			for (int c = 0; c < N; c++) {
-				if (map[r][c] <= deep) {// 잠겨야겠지?
-					visit[r][c] = true;// 히히 못가
-				}
+		for (int i = 0; i < arr2.length; i++) {
+			if(arr2[i]>maxx) {
+				
+				maxx = arr2[i];
+				
 			}
 		}
+		
+		System.out.println(maxx);
 
-		for (int r = 0; r < N; r++) {
-			for (int c = 0; c < N; c++) {
-				if (!visit[r][c]) {
-					cnt++;
-					visit[r][c] = true;
-					check(r, c);
-				}
+	}
+
+	private static void dfs(int r, int c) {
+		visited[r][c] = true;
+
+		for (int d = 0; d < 4; d++) {
+			int nr = r + dr[d];
+			int nc = c + dc[d];
+			if (nr >= 0 && nr < N && nc >= 0 && nc < N && map[nr][nc] > o && !visited[nr][nc]) {
+				dfs(nr, nc); // 시작점부터 탐색
+
 			}
 		}
 	}
 
-	public static void check(int r, int c) {
-		//상하좌우
-		//상
-		if(r-1 >= 0 && !visit[r-1][c]) {//인덱스가 범위 안에 존재하고 방문한적이 없다면
-			visit[r-1][c] = true;
-			check(r-1, c);
-		}
-		//하
-		if(r+1 < N && !visit[r+1][c]) {//인덱스가 범위 안에 존재하고 방문한적이 없다면
-			visit[r+1][c] = true;
-			check(r+1, c);
-		}
-		//좌
-		if(c-1 >= 0 && !visit[r][c-1]) {//인덱스가 범위 안에 존재하고 방문한적이 없다면
-			visit[r][c-1] = true;
-			check(r, c-1);
-		}
-		//우
-		if(c+1 < N && !visit[r][c+1]) {//인덱스가 범위 안에 존재하고 방문한적이 없다면
-			visit[r][c+1] = true;
-			check(r, c+1);
-		}
-	}
 }
