@@ -1,58 +1,90 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) {
+
+		Scanner sc = new Scanner(System.in);
+		int n = sc.nextInt();
+
+		StringBuilder sb = new StringBuilder(); 
+		
 		Stack<Integer> stack = new Stack<>();
 		
-		int N = Integer.parseInt(br.readLine());
-		
-		for(int i=0; i<N;i++) {
-			st = new StringTokenizer(br.readLine());
-			
-			int cmd = Integer.parseInt(st.nextToken());
-			
-			switch(cmd) {
-			
-				case 1:
-					stack.push(Integer.parseInt(st.nextToken()));
-				break;
-				
-				case 2:
-					if(stack.isEmpty()) {
-						sb.append(-1+"\n");
-					}
-					else
-						sb.append(stack.pop()+"\n");
-				break;
-				
-				case 3:
-					sb.append(stack.size()+"\n");
-				break;
-				
-				case 4:
-					if(stack.isEmpty()) {
-						sb.append(1+"\n");
-					}
-					else
-						sb.append(0+"\n");
-				break;
-				
-				case 5:
-					if(stack.isEmpty()) {
-						sb.append(-1+"\n");
-					}
-					else
-						sb.append(stack.peek()+"\n");
-				break;
+
+		for (int i = 0; i < n; i++) {
+
+			int k = sc.nextInt();
+
+			if (k == 1) {
+
+				int a = sc.nextInt();
+
+				stack.push(a);
+
 			}
+
+			else if (k == 2) {
+
+				if (!stack.isEmpty()) {
+					
+					sb.append(stack.pop()).append("\n");
+//					System.out.println(stack.pop());
+				}
+
+				else {
+
+					sb.append(-1).append("\n");
+//					System.out.println(-1);
+
+				}
+			}
+
+			else if (k == 3) {
+
+//				System.out.println(stack.size());
+				sb.append(stack.size()).append("\n");
+			}
+
+			else if (k == 4) {
+
+				if (stack.isEmpty()) {
+
+//					System.out.println(1);
+					sb.append(1).append("\n");
+				}
+
+				else {
+
+//					System.out.println(0);
+					sb.append(0).append("\n");
+
+	
+				}
+
+			}
+
+			else if (k == 5) {
+
+				if (stack.isEmpty()) {
+
+//					System.out.println(-1);
+					sb.append(-1).append("\n");
+
+				}
+
+				else {
+					
+					
+					sb.append(stack.peek()).append("\n");
+//					System.out.println(stack.peek());
+//					stack.peek();
+				}
+			}
+			
+			
 		}
+		
 		System.out.println(sb);
 	}
 }
