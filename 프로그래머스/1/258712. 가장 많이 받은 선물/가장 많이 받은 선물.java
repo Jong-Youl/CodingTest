@@ -16,15 +16,8 @@ class Solution {
             
             String from = s.split(" ")[0];
             String to = s.split(" ")[1];
-            int fromFriend = 0;
-            int toFriend = 0;
-                
-            for(int i = 0; i < N; i++) {
-                if(from.equals(friends[i])) fromFriend = i;
-            }
-            for(int i = 0; i < N; i++) {
-                if(to.equals(friends[i])) toFriend = i;
-            }    
+            int fromFriend = checkGift(N, friends, from);
+            int toFriend = checkGift(N, friends, to);  
         
             giftRecord[fromFriend][toFriend]++;
             
@@ -90,5 +83,15 @@ class Solution {
         }
         
         return answer;
+    }
+    
+    public int checkGift(int N, String [] friends, String target) {
+        int result = 0;
+        
+        for(int i = 0; i < N; i++) {
+                if(target.equals(friends[i])) result = i;
+        }
+        
+        return result;
     }
 }
