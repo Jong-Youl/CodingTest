@@ -89,19 +89,6 @@ class Solution {
             answer = Math.max(answer, i);
         }
         
-//         for(int i = 0; i < N; i++){
-//             for(int j = 0; j < N; j++){
-//                 System.out.print(giftRecord[i][j] + " ");
-//             }
-//             System.out.println();
-//         }
-        
-//         for(int i = 0; i < N; i ++) {
-//             System.out.println(giftScore[i] + " ");
-//         }
-//         System.out.println();
-//         System.out.println(Arrays.toString(giftExpected));
-        
         return answer;
     }
 }
