@@ -1,72 +1,67 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-	
+
+	public static int max = Integer.MIN_VALUE;
+	public static int min = Integer.MAX_VALUE;
 	public static int N;
-	public static boolean [] num_check;
-	public static int [] num;
-	public static int [] Opt = new int [4];//사칙연산 횟수
-	public static int result_max = Integer.MIN_VALUE; //결과 저장
-	public static int result_min = Integer.MAX_VALUE; //결과 저장
-	
-	public static void main(String[] args) throws IOException{
+
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
-		
-		N = Integer.parseInt(br.readLine());//숫자 갯수
-		
-		num = new int[N];
-		num_check = new boolean [N];
-		Opt = new int[4];
 
+		//숫자 개수
+		N = Integer.parseInt(br.readLine());
+
+		int [] arr = new int [N];
+		int [] opt = new int [4];//+-*/순서
+
+		//숫자 정보 입력
 		st = new StringTokenizer(br.readLine());
-		for(int i=0;i<N;i++) {//숫자 배열 입력
-			num[i] = Integer.parseInt(st.nextToken());
-		}//입력완료
-		
+		for(int i = 0; i < N; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
+		}
+		//각각 연산의 갯수
 		st = new StringTokenizer(br.readLine());
-		for(int i=0; i<4;i++) {//사칙연산 횟수 배열 입력
-			Opt[i] = Integer.parseInt(st.nextToken());
-		}//입력완료		
-		
-		Operator(num[0], 1);
-		
-		System.out.println(result_max);
-		System.out.println(result_min);
+		for(int i = 0; i < 4; i++) {
+			opt[i] = Integer.parseInt(st.nextToken());
+		}
+
+		comb(arr[0], 1, arr, opt);
+
+		System.out.println(max);
+		System.out.println(min);
 	}
-	
-	public static void Operator(int res, int n) {
-		//탈출
-		if(n == N) {
-			result_max = Math.max(result_max, res);//값과 비교
-			result_min = Math.min(result_min, res);//값과 비교
+
+	private static void comb(int res, int depth, int [] arr, int[] opt) {
+		if(depth == N) {
+			max = Math.max(res, max);
+			min = Math.min(res, min);
 			return;
 		}
-		
-		for(int i=0;i<4;i++) {// 연산 횟수만큼 돌기
-		
-			if(Opt[i]>0) {//해당 연산 가능이면
-				Opt[i]--;//연산 횟수 지워주고
-			
-				switch(i) {
-					case 0: Operator(res + num[n], n+1);//다음 인덱스로 재귀
-					break;
-					case 1: Operator(res - num[n], n+1);//다음 인덱스로 재귀
-					break;
-					case 2: Operator(res * num[n], n+1);//다음 인덱스로 재귀
-					break;
-					case 3: Operator(res / num[n], n+1);//다음 인덱스로 재귀
-					break;
+
+		for(int i = 0; i < 4; i++) {
+			if(opt[i] > 0) {
+				opt[i]--;
+				int tmp = arr[depth];
+
+				if(i == 0) {
+					comb(res + tmp, depth + 1, arr, opt);
 				}
-				//각 케이스 구하고 나면 배열 초기화 해줘야함
-				Opt[i]++;//연산 횟수 채워주기
+				else if (i == 1) {
+					comb(res - tmp, depth + 1, arr, opt);
+				}
+				else if (i == 2) {
+					comb(res * tmp, depth + 1, arr, opt);
+				}
+				else {
+					comb(res / tmp, depth + 1, arr, opt);
+				}
+				opt[i]++;
 			}
-			
 		}
-		
 	}
 }
