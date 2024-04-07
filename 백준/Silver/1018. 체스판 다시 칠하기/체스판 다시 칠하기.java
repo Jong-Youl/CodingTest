@@ -1,57 +1,65 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
-	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		
-		int M = sc.nextInt();
-		int N = sc.nextInt();
-		int min = Integer.MAX_VALUE;
-		
-		char [][] arr = new char[M][N];
-		
-		for(int r=0; r<M;r++) {//배열 입력
-			String str = sc.next();
-			for(int c=0; c<N;c++) {
-				arr[r][c] = str.charAt(c);
+
+	public static int N = 8;
+	public static int total = 64;
+	public static int min = Integer.MAX_VALUE;
+	public static int R, C;
+	public static char [][] map, A, B;
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
+		R = Integer.parseInt(st.nextToken());
+		C = Integer.parseInt(st.nextToken());
+
+		map = new char [R][C];
+		A = new char [N][N];
+		B = new char [N][N];
+
+		for(int r = 0; r < N; r++){
+			for(int c = 0; c < N; c++){
+				if(c % 2 == r % 2) {
+					A[r][c] = 'B';
+				}
+				else {
+					A[r][c] = 'W';
+				}
 			}
 		}
-		
-		for(int i=0; i<=M-8;i++) {//배열 입력
-			for(int j=0; j<=N-8;j++) {
-				int cnt = 0;
-				for(int r=0; r<8;r++) {//보드와 체스판 크기 차이
-					for(int c=0; c<8;c++) {
-						int r_idx = r+i;
-						int c_idx = c+j;
-						
-						if((r+c) % 2 == 0) {//r+c가 짝수이면 
-							if(arr[r_idx][c_idx] == arr[i][j]) {//시작점과 같아야해요
-							}
-							else {//아니면 추가해 준답니다 ^^
-								cnt++;
-							}
-						}
-						else {//r+c가 홀수이면
-							if(arr[r_idx][c_idx] != arr[i][j]) {//시작점과 달라야해요
-							}
-							else{//같다면 하나 추가요^^
-								cnt++;
-							}
-						}
-					}
-				}
-				//이전 cnt와 비교
-				if(cnt > 32) {//8*8의 절반 32보다 작다면 cnt는 그대로
-					min = Math.min(64-cnt, min);
-				}
-				else{
-					min = Math.min(cnt, min);
-				}
-		
+
+		for(int r = 0; r < R; r++){
+			String str = br.readLine();
+			for(int c = 0; c < C; c++){
+				map[r][c] = str.charAt(c);
 			}
 		}
+
+
+		for(int r = 0; r < R - 7; r++){
+			for(int c = 0; c < C - 7; c++){
+				min = Math.min(min, compare(r, c));
+			}
+		}
+
 		System.out.println(min);
+	}
+
+	public static int compare(int r, int c) {
+		int diff = 0;
+
+		//A랑 비교
+		for(int i = r; i < r + 8; i++) {
+			for(int j = c; j < c + 8; j++) {
+				if(map[i][j] != A[i-r][j-c]) diff++;
+			}
+		}
+
+		return Math.min(diff, total - diff);
 	}
 }
