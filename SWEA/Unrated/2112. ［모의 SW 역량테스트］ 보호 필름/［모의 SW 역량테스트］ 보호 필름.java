@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 
 public class Solution {
 	public static int D, W, K, min;
-	public static int[][] map;
+	public static int[][] map, backUp;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -20,11 +20,13 @@ public class Solution {
 			K = Integer.parseInt(st.nextToken());
 			min = D;
 			map = new int[D][W];
+			backUp = new int[D][W];
 
 			for (int r = 0; r < D; r++) {
 				st = new StringTokenizer(br.readLine());
 				for (int c = 0; c < W; c++) {
 					map[r][c] = Integer.parseInt(st.nextToken());
+					backUp[r][c] = map[r][c];
 				}
 			}
 			comb(0, 0);
@@ -55,25 +57,30 @@ public class Solution {
 		return true;
 	}
 
+	public static void copy(int idx) {
+		for (int c = 0; c < W; c++) {
+			map[idx][c] = backUp[idx][c];
+		}
+	}
+
 	//IDX는 ROW, DEPTH는 투약 룃수
 	public static void comb(int idx, int depth) {
 		if (min <= depth || depth == D) {
 			return;
 		}
 		if (idx == D) {
-			if(test(map)) {
+			if (test(map)) {
 				min = depth;
 			}
 			return;
 		}
 
-
 		comb(idx + 1, depth);
 
-		int[] backUp = new int[W];
-		for (int j = 0; j < W; j++) {
-			backUp[j] = map[idx][j];
-		}
+		// int[] backUp = new int[W];
+		// for (int j = 0; j < W; j++) {
+		// 	backUp[j] = map[idx][j];
+		// }
 
 		for (int j = 0; j < W; j++) {
 			map[idx][j] = 0;
@@ -85,8 +92,6 @@ public class Solution {
 		}
 		comb(idx + 1, depth + 1);
 
-		for (int j = 0; j < W; j++) {
-			map[idx][j] = backUp[j];
-		}
+		copy(idx);
 	}
 }
