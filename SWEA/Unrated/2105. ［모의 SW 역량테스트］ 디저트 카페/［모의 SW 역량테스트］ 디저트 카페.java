@@ -1,15 +1,15 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class Solution {
-	public static int N, max;
-	//시계방향 대각선 -> 우상, 우하, 좌하, 좌상
+
+	public static int N, max, startR, startC;
+	//우상, 우하, 좌하, 좌상
 	public static int [] dr = {-1, 1, 1, -1};
 	public static int [] dc = {1, 1, -1, -1};
 	public static int [][] map;
+	public static boolean [] menu;
 
 	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -20,10 +20,10 @@ public class Solution {
 
 		for(int tc = 1; tc <= T; tc++) {
 			sb.append("#").append(tc).append(" ");
-
-			N = Integer.parseInt(br.readLine());
 			max = Integer.MIN_VALUE;
-			map = new int [N][N];
+			N = Integer.parseInt(br.readLine());
+			map = new int[N][N];
+
 			for(int r = 0; r < N; r++) {
 				st = new StringTokenizer(br.readLine());
 				for(int c = 0; c < N; c++) {
@@ -31,39 +31,44 @@ public class Solution {
 				}
 			}
 
-			for(int r = 0; r < N; r++) {
-				for(int c = 0; c < N; c++) {
-					List <Integer> menu = new ArrayList<>();
-					find(r, c, r, c, 0, 0, menu);
-				}
-			}
-
-			if(max == Integer.MIN_VALUE) {
-				sb.append(-1).append("\n");
-			}
-			else sb.append(max).append("\n");
+			simulation();
+			if(max == Integer.MIN_VALUE) max = -1;
+			sb.append(max).append("\n");
 		}
 		System.out.println(sb);
 	}
-	//dfs로 해야함
-	public static void find (int startR, int startC, int r, int c, int cnt, int dir, List<Integer> menu) {
-		if(startR == r && startC == c && dir == 3) {
-			max = Math.max(max, cnt);
-			return;
+	public static void getDessert(int r, int c, int dir, int cnt) {
+		for(int i = 0; i < 2; i++) {
+			int idx = dir + i;
+			//4가 되면은 이미 한바퀴 돈거임
+			if(idx == 4) break;
+
+			int nr = r + dr[idx];
+			int nc = c + dc[idx];
+
+			if(nr == startR && nc == startC && idx == 3) {
+				max = Math.max(max, cnt);
+				continue;
+			}
+
+			if(0 <= nr && nr < N && 0 <= nc && nc < N && !menu[map[nr][nc]]) {
+				menu[map[nr][nc]] = true;
+				getDessert(nr, nc, idx, cnt + 1);
+				menu[map[nr][nc]] = false;
+			}
 		}
+	}
 
-		List<Integer> dummy = new ArrayList<>();
-		dummy.addAll(menu);
-
-		if(dummy.contains(map[r][c])) return;
-		dummy.add(map[r][c]);
-
-		if(0 <= r + dr[dir] && r + dr[dir] < N && 0 <= c + dc[dir] && c + dc[dir] < N){
-			find(startR, startC, r+dr[dir], c + dc[dir], cnt+1, dir, dummy);
-		}
-		if(dir < 3) {
-			if(0 <= r + dr[dir + 1] && r + dr[dir + 1] < N && 0 <= c + dc[dir + 1] && c + dc[dir + 1] < N){
-				find(startR, startC, r+dr[dir + 1], c + dc[dir + 1], cnt+1, dir + 1, dummy);
+	public static void simulation () {
+		for(int r = 1; r < N - 1; r++) {
+			for(int c = 0; c < N - 2; c++) {
+				startR = r;
+				startC = c;
+				// visit = new boolean[N][N];
+				// visit[r][c] = true;
+				menu = new boolean[101];
+				menu[map[r][c]] = true;
+				getDessert(r, c, 0, 1);
 			}
 		}
 	}
