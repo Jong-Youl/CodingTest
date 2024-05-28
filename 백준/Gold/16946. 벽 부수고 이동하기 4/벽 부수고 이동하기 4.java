@@ -2,9 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -14,7 +16,6 @@ public class Main {
 	public static int[] dr = {-1, 1, 0, 0};
 	public static int[] dc = {0, 0, -1, 1};
 	public static int[][] map, count, clusterMap;
-	public static boolean[] visitCluster;
 	public static boolean[][] visitMap;
 
 	public static void main(String[] args) throws IOException {
@@ -26,7 +27,7 @@ public class Main {
 
 		map = new int[N][M];
 		count = new int[N][M];
-		clusterMap = new int [N][M];
+		clusterMap = new int[N][M];
 		visitMap = new boolean[N][M];
 
 		for (int r = 0; r < N; r++) {
@@ -36,14 +37,14 @@ public class Main {
 			}
 		}
 
-		getCount();
-		getResult();
+		calculateCounts();
+		calculateResult();
 		printResult();
 	}
 
 	private static void printResult() {
-		for(int r = 0; r < N; r++) {
-			for(int c = 0; c < M; c++) {
+		for (int r = 0; r < N; r++) {
+			for (int c = 0; c < M; c++) {
 				sb.append(map[r][c] % 10);
 			}
 			sb.append("\n");
@@ -51,16 +52,16 @@ public class Main {
 		System.out.println(sb);
 	}
 
-	private static void getResult () {
-		for(int r = 0; r < N; r++) {
-			for(int c = 0; c < M; c++) {
-				if(map[r][c] == 1) {
-					visitCluster = new boolean[cluster];
-					for(int i = 0; i < dr.length; i++) {
+	private static void calculateResult() {
+		for (int r = 0; r < N; r++) {
+			for (int c = 0; c < M; c++) {
+				if (map[r][c] == 1) {
+					Set<Integer> set = new HashSet<>();
+					for (int i = 0; i < dr.length; i++) {
 						int nr = r + dr[i];
 						int nc = c + dc[i];
-						if(checkIndex(nr, nc) && !visitCluster[clusterMap[nr][nc]]) {
-							visitCluster[clusterMap[nr][nc]] = true;
+						if (checkIndex(nr, nc) && !set.contains(clusterMap[nr][nc])) {
+							set.add(clusterMap[nr][nc]);
 							map[r][c] += count[nr][nc];
 						}
 					}
@@ -69,11 +70,12 @@ public class Main {
 		}
 	}
 
-	private static void getCount () {
+	private static void calculateCounts() {
 		for (int r = 0; r < N; r++) {
 			for (int c = 0; c < M; c++) {
-				if (map[r][c] == 0 && !visitMap[r][c])
+				if (map[r][c] == 0 && !visitMap[r][c]) {
 					bfs(r, c);
+				}
 			}
 		}
 	}
@@ -83,32 +85,32 @@ public class Main {
 	}
 
 	private static void bfs(int r, int c) {
-		Queue<Pos> q = new LinkedList<>();
+		Queue<Pos> queue = new LinkedList<>();
 		List<Pos> list = new ArrayList<>();
 		int cnt = 1;
 
 		visitMap[r][c] = true;
-		q.add(new Pos(r, c));
-		list.add(new Pos(r, c));
+		Pos startPos = new Pos(r, c);
+		queue.add(startPos);
+		list.add(startPos);
 
-		while (!q.isEmpty()) {
-			Pos tmp = q.poll();
+		while (!queue.isEmpty()) {
+			Pos tmp = queue.poll();
 
 			for (int i = 0; i < dr.length; i++) {
 				int nr = tmp.r + dr[i];
 				int nc = tmp.c + dc[i];
-				if(checkIndex(nr, nc) && map[nr][nc] == 0 && !visitMap[nr][nc]) {
+				if (checkIndex(nr, nc) && map[nr][nc] == 0 && !visitMap[nr][nc]) {
 					cnt++;
+					visitMap[nr][nc] = true;
 					Pos next = new Pos(nr, nc);
-					if(visitMap[next.r][next.c]) continue;
-					visitMap[next.r][next.c] = true;
-					q.add(next);
+					queue.add(next);
 					list.add(next);
 				}
 			}
 		}
 
-		for(Pos pos : list) {
+		for (Pos pos : list) {
 			count[pos.r][pos.c] = cnt;
 			clusterMap[pos.r][pos.c] = cluster;
 		}
