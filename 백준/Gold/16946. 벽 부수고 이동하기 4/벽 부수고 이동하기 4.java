@@ -27,7 +27,6 @@ public class Main {
 		map = new int[N][M];
 		count = new int[N][M];
 		clusterMap = new int [N][M];
-
 		visitMap = new boolean[N][M];
 
 		for (int r = 0; r < N; r++) {
@@ -60,7 +59,7 @@ public class Main {
 					for(int i = 0; i < dr.length; i++) {
 						int nr = r + dr[i];
 						int nc = c + dc[i];
-						if(checkIndex(nr, nc) && map[nr][nc] != 1 && !visitCluster[clusterMap[nr][nc]]) {
+						if(checkIndex(nr, nc) && !visitCluster[clusterMap[nr][nc]]) {
 							visitCluster[clusterMap[nr][nc]] = true;
 							map[r][c] += count[nr][nc];
 						}
@@ -88,8 +87,8 @@ public class Main {
 		List<Pos> list = new ArrayList<>();
 		int cnt = 1;
 
-		q.add(new Pos(r, c));
 		visitMap[r][c] = true;
+		q.add(new Pos(r, c));
 		list.add(new Pos(r, c));
 
 		while (!q.isEmpty()) {
@@ -100,8 +99,9 @@ public class Main {
 				int nc = tmp.c + dc[i];
 				if(checkIndex(nr, nc) && map[nr][nc] == 0 && !visitMap[nr][nc]) {
 					cnt++;
-					visitMap[nr][nc] = true;
 					Pos next = new Pos(nr, nc);
+					if(visitMap[next.r][next.c]) continue;
+					visitMap[next.r][next.c] = true;
 					q.add(next);
 					list.add(next);
 				}
