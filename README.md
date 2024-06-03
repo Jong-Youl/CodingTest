@@ -1,2 +1,5 @@
 # CodingTest
-This is a auto push repository for Baekjoon Online Judge created with [BaekjoonHub](https://github.com/BaekjoonHub/BaekjoonHub).
+
+백준, 프로그래머스, SWEA에서 푼 알고리즘 문제를 담은 Repository입니다.
+
+여러 알고리즘과 자료구조를 사용하면서 프로그래밍 언어의 숙련도와 문제해결능력을 기르고 있습니다.
