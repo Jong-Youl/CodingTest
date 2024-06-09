@@ -76,14 +76,7 @@ public class Main {
 
 	public static class Pos{
 		int r, c, cnt, dist;
-		
-		public Pos(int r, int c, int cnt) {
-			this.r= r;
-			this.c= c;
-			this.cnt= cnt;
-			this.dist = 0;
-		}
-		
+				
 		public Pos(int r, int c, int cnt, int dist) {
 			this.r= r;
 			this.c= c;
