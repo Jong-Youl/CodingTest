@@ -1,172 +1,146 @@
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-
-/**
- * 스터디에서 알고리즘 문제 함께 풀어보실 분들
- * 여기로 → https://wsapt.github.io/public/
- *
- * BOJ 16236번 아기 상어
- *
- * 유튜브 문제 풀이: https://youtu.be/86NLR0ZuIWc
- *
- * 문제링크: https://www.acmicpc.net/problem/16236
- *
- * 자바소스: https://bit.ly/3kaTNAU
- */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-    int N;
-    String[] strs;
-    int[][] map;
-    int[][] path;
-    int sI, sJ;
-    int sharkSize = 2;
-    int eat = 0;
-    ArrayList<Integer[]> al = new ArrayList<>();
-    ArrayList<Integer[]> alCandidate = new ArrayList<>();
-
-    static int Y = 0;
-    static int X = 1;
-    static int Time = 2;
-    public int[] d4i = new int[]{1, 0, -1, 0};
-    public int[] d4j = new int[]{0, 1, 0, -1};
-    int r = 0;
-
-    public void solve() throws IOException {
-        N = Integer.parseInt(br.readLine());
-        map = new int[N + 2][N + 2];
-        fill2D(map, -1);
-        path = new int[N + 2][N + 2];
-
-        for (int i = 0; i < N; ++i) {
-            strs = br.readLine().split(" ");
-
-            for (int j = 0; j < N; ++j) {
-                int v = Integer.parseInt(strs[j]);
-                map[i + 1][j + 1] = v;
-
-                if (v == 9) {
-                    sI = i + 1;
-                    sJ = j + 1;
-                }
-            }
-        }
-
-        map[sI][sJ] = 0;
-
-        while (true) {
-            Integer[] rlt = floodFill();
-
-            if (rlt == null)
-                break;
-
-            r += rlt[Time];
-            sI = rlt[Y];
-            sJ = rlt[X];
-            map[sI][sJ] = 0;
-
-            eat++;
-
-            if (eat == sharkSize) {
-                sharkSize++;
-                eat = 0;
-            }
-        }
-
-        bw.write(String.valueOf(r));
-        bw.newLine();
-        bw.close();
-    }
+    private static Shark baby;
+    private static int N;
+    private static int[] dr = {-1, 1, 0, 0};
+    private static int[] dc = {0, 0, -1, 1};
+    private static int[][] map;
 
     public static void main(String[] args) throws IOException {
-        Main main = new Main();
-        main.solve();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        N = Integer.parseInt(br.readLine());
+        map = new int[N][N];
+
+        for (int r = 0; r < N; r++) {
+            st = new StringTokenizer(br.readLine());
+            for (int c = 0; c < N; c++) {
+                map[r][c] = Integer.parseInt(st.nextToken());
+                if (map[r][c] == 9) {
+                    baby = new Shark(r, c);
+                    map[r][c] = 0;
+                }
+            }
+        }
+
+        int result = simulation();
+        System.out.println(result);
     }
 
-    public Integer[] floodFill() {
-        fill2D(path, 1000);
-        alCandidate.clear();
-        al.add(new Integer[]{sI, sJ, 0});
-        path[sI][sJ] = 0;
-
-        while (al.size() > 0) {
-            Integer[] p = al.get(0);
-            al.remove(0);
-
-            int si = p[Y];
-            int sj = p[X];
-            int depth = p[2];
-
-            if (path[si][sj] != 1000) {
-                if (path[si][sj] < depth) {
-                    continue;
-                }
-            }
-
-            for (int idxD = 0; idxD < d4i.length; ++idxD) {
-                int y = si + d4i[idxD];
-                int x = sj + d4j[idxD];
-
-                if (map[y][x] == -1)
-                    continue;
-
-                if (map[y][x] == 0
-                        && depth + 1 < path[y][x]) {
-                    al.add(new Integer[]{y, x, depth + 1});
-                    path[y][x] = depth + 1;
-                    continue;
-                }
-
-                if (map[y][x] == sharkSize
-                        && depth + 1 < path[y][x]) {
-                    al.add(new Integer[]{y, x, depth + 1});
-                    path[y][x] = depth + 1;
-                    continue;
-                }
-
-                if (map[y][x] < sharkSize
-                        && depth + 1 < path[y][x]) {
-                    alCandidate.add(new Integer[]{y, x, depth + 1});
-                    al.add(new Integer[]{y, x, depth + 1});
-                    path[y][x] = depth + 1;
-                    continue;
-                }
-            }
+    private static int simulation() {
+        int time = 0;
+        Pos target;
+        while (true) {
+            target = searchFeed();
+            if (target.r == -1 && target.c == -1) break;
+            time += target.dist;
         }
 
-        if (alCandidate.size() == 0) {
-            return null;
-        }
+        return time;
+    }
 
-        Collections.sort(alCandidate, new Comparator<Integer[]>() {
-            @Override
-            public int compare(Integer[] o1, Integer[] o2) {
-                if (o1[2] == o2[2]) {
-                    if (o1[0] == o2[0]) {
-                        return (o1[1] - o2[1]);
+    private static Pos searchFeed() {
+        Queue<Pos> q = new LinkedList<>();
+        PriorityQueue<Pos> pq = new PriorityQueue<>();
+        boolean[][] visit = new boolean[N][N];
+
+        q.add(new Pos(baby.r, baby.c, 0));
+        visit[baby.r][baby.c] = true;
+
+        while (!q.isEmpty()) {
+            Pos tmp = q.poll();
+
+            for (int i = 0; i < 4; i++) {
+                int nr = tmp.r + dr[i];
+                int nc = tmp.c + dc[i];
+
+                if (checkIndex(nr, nc) && !visit[nr][nc] && map[nr][nc] <= baby.size) {
+                    visit[nr][nc] = true;
+                    q.add(new Pos(nr, nc, tmp.dist + 1));
+
+                    if (map[nr][nc] != 0 && map[nr][nc] < baby.size) {
+                        pq.add(new Pos(nr, nc, tmp.dist + 1));
                     }
-
-                    return (o1[0] - o2[0]);
                 }
-
-                return (o1[2] - o2[2]);
             }
-        });
+        }
 
-        return alCandidate.get(0);
-    }
-
-    public void fill2D(int[][] _2D, int v) {
-        for (int[] _1D : _2D) {
-            Arrays.fill(_1D, v);
+        if (pq.isEmpty()) return new Pos(-1, -1, 0);
+        else {
+            Pos result = pq.poll();
+            baby.eatFeed();
+            baby.setPos(result.r, result.c);
+            map[result.r][result.c] = 0;
+            return result;
         }
     }
 
+    private static boolean checkIndex(int r, int c) {
+        return r >= 0 && r < N && c >= 0 && c < N;
+    }
 
+    private static class Shark {
+        int r, c, size, cnt;
+
+        private Shark(int r, int c) {
+            this.r = r;
+            this.c = c;
+            size = 2;
+            cnt = 0;
+        }
+
+        private void eatFeed() {
+            cnt++;
+            if (cnt == size) {
+                cnt = 0;
+                size++;
+            }
+        }
+
+        private void setPos(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+
+        @Override
+        public String toString() {
+            return "Shark{" +
+                    "r=" + r +
+                    ", c=" + c +
+                    ", size=" + size +
+                    ", cnt=" + cnt +
+                    '}';
+        }
+    }
+
+    private static class Pos implements Comparable<Pos> {
+        int r, c, dist;
+
+        private Pos(int r, int c, int dist) {
+            this.r = r;
+            this.c = c;
+            this.dist = dist;
+        }
+
+        @Override
+        public int compareTo(Pos o) {
+            if (this.dist != o.dist) return this.dist - o.dist; // 거리 우선
+            if (this.r != o.r) return this.r - o.r; // 같은 거리일 때, 행 우선
+            return this.c - o.c; // 같은 행일 때, 열 우선
+        }
+
+        @Override
+        public String toString() {
+            return "Pos{" +
+                    "r=" + r +
+                    ", c=" + c +
+                    ", dist=" + dist +
+                    '}';
+        }
+    }
 }
