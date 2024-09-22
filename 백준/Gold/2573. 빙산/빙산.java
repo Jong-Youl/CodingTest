@@ -10,16 +10,21 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int[] dr = {-1, 1, 0, 0};
-        int[] dc = {0, 0, -1, 1};
-
-        //init - start
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
 
         int[][] map = new int[N][M];
         int[][] copy = new int[N][M];
 
+        initializeMap(br, N, M, map, copy);
+
+        int year = runSimulation(map, copy, N, M);
+
+        System.out.println(year);
+    }
+
+    public static void initializeMap(BufferedReader br, int N, int M, int[][] map, int[][] copy) throws IOException {
+        StringTokenizer st;
         for (int r = 0; r < N; r++) {
             st = new StringTokenizer(br.readLine());
             for (int c = 0; c < M; c++) {
@@ -27,66 +32,64 @@ public class Main {
                 copy[r][c] = map[r][c];
             }
         }
-        // init - end
+    }
 
-        //simulation
+    public static int runSimulation(int[][] map, int[][] copy, int N, int M) {
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
         int year = 0;
+
         while (true) {
-            // 빙산 녹이기
-            for (int r = 0; r < N; r++) {
-                for (int c = 0; c < M; c++) {
-                    if (map[r][c] != 0) {
-                        int cnt = 0;
-                        for (int i = 0; i < 4; i++) {
-                            int nr = r + dr[i], nc = c + dc[i];
-
-                            // checkIndex
-                            if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
-                            if (map[nr][nc] == 0) cnt++;
-                        }
-
-                        if (copy[r][c] < cnt)
-                            copy[r][c] = 0;
-                        else
-                            copy[r][c] -= cnt;
-                    }
-                }
-            }
+            meltIcebergs(map, copy, N, M, dr, dc);
             year++;
 
-            // 빙산이 남아있는지 확인
-            boolean isExist = false;
-            for (int r = 0; r < N; r++) {
-                for (int c = 0; c < M; c++) {
-                    if (copy[r][c] != 0) {
-                        isExist = true;
-                        break;
-                    }
-                }
+            if (!checkIceExist(copy, N, M)) {
+                return 0;
             }
 
-            if (!isExist) {  // 모든 빙산이 녹았다면
-                year = 0;
-                break;
-            }
-
-            // 빙산이 분리되었는지 확인
             if (checkSeparation(copy, N, M)) {
                 break;
             }
 
-            // map 갱신
-            for (int r = 0; r < N; r++) {
-                for (int c = 0; c < M; c++) {
-                    map[r][c] = copy[r][c];
+            updateMap(map, copy, N, M);
+        }
+
+        return year;
+    }
+
+    public static void meltIcebergs(int[][] map, int[][] copy, int N, int M, int[] dr, int[] dc) {
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < M; c++) {
+                if (map[r][c] != 0) {
+                    int cnt = 0;
+                    for (int i = 0; i < 4; i++) {
+                        int nr = r + dr[i], nc = c + dc[i];
+                        if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
+                        if (map[nr][nc] == 0) cnt++;
+                    }
+                    copy[r][c] = Math.max(copy[r][c] - cnt, 0);
                 }
             }
         }
-
-        System.out.println(year);
     }
 
-    // 빙산이 분리되었는지 확인하는 함수
+    public static boolean checkIceExist(int[][] copy, int N, int M) {
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < M; c++) {
+                if (copy[r][c] != 0) return true;
+            }
+        }
+        return false;
+    }
+
+    public static void updateMap(int[][] map, int[][] copy, int N, int M) {
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < M; c++) {
+                map[r][c] = copy[r][c];
+            }
+        }
+    }
+
     public static boolean checkSeparation(int[][] map, int N, int M) {
         boolean[][] visited = new boolean[N][M];
         int icebergCount = 0;
@@ -94,12 +97,12 @@ public class Main {
         for (int r = 0; r < N; r++) {
             for (int c = 0; c < M; c++) {
                 if (map[r][c] != 0 && !visited[r][c]) {
-                    if (++icebergCount > 1) return true;  // 2개 이상의 덩어리가 있으면 분리된 것
+                    if (++icebergCount > 1) return true;
                     bfs(map, visited, r, c, N, M);
                 }
             }
         }
-        return false;// 분리되지 않음
+        return false;
     }
 
     public static void bfs(int[][] map, boolean[][] visited, int r, int c, int N, int M) {
@@ -116,8 +119,6 @@ public class Main {
 
             for (int i = 0; i < 4; i++) {
                 int nr = cr + dr[i], nc = cc + dc[i];
-
-                // checkIndex
                 if (nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
                 if (map[nr][nc] != 0 && !visited[nr][nc]) {
                     visited[nr][nc] = true;
