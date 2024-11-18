@@ -41,6 +41,7 @@ class Solution {
                 break;
         }
         
+        // && stamina + sum1 < min
         if(dia > 0 && stamina + sum1 < min)
             dfs(dia - 1, iron, stone, depth + cnt, minerals, stamina + sum1);
         
