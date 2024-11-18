@@ -41,14 +41,13 @@ class Solution {
                 break;
         }
         
-        // && stamina + sum1 < min
-        if(dia > 0)
+        if(dia > 0 && stamina + sum1 < min)
             dfs(dia - 1, iron, stone, depth + cnt, minerals, stamina + sum1);
         
-        if(iron > 0)
+        if(iron > 0 && stamina + sum2 < min)
             dfs(dia, iron - 1, stone, depth + cnt, minerals, stamina + sum2);
         
-        if(stone > 0)
+        if(stone > 0 && stamina + sum3 < min)
             dfs(dia, iron, stone - 1, depth + cnt, minerals, stamina + sum3);
     }
 }
