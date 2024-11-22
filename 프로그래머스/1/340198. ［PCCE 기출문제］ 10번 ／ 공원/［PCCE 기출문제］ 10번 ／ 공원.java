@@ -19,12 +19,12 @@ class Solution {
     
     
     public boolean isPossible(String [][] park, int size) {
-        for(int r = 0; r < park.length; r++) {
-         p: for(int c = 0; c < park[r].length; c++) {
+        for(int r = 0; r < park.length - size + 1; r++) {
+         p: for(int c = 0; c < park[r].length - size + 1; c++) {
                 // size * size 탐색
                 for(int i = 0; i < size; i++) {
                     for(int j = 0; j < size; j++) {
-                        if(r + i >= park.length || c + j >= park[r].length || !park[r + i][c + j].equals("-1")) {
+                        if(!park[r + i][c + j].equals("-1")) {
                             continue p;
                         }
                     }
