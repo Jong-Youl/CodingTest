@@ -28,8 +28,7 @@ class Solution {
             for(int j = 1; j <= n; j++)
                 if(visit[j]) checked++;
             
-            int unchecked = n - checked;
-            answer = Math.min(answer, Math.abs(checked - unchecked));
+            answer = Math.min(answer, Math.abs(n - 2 * checked));
         }
         
         return answer;
