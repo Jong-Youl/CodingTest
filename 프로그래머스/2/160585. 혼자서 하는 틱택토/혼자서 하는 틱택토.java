@@ -11,7 +11,7 @@ class Solution {
             }
         }
         
-        // O와 X의 개수 검증
+        // X -> O보다 클 수 없음, O ->  X + 1 보다 클 수 없음
         if (xCnt > oCnt || oCnt > xCnt + 1) return 0;
         
         boolean oWin = isWin(map, 'O');
