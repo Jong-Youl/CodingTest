@@ -3,7 +3,6 @@ class Solution {
         int oCnt = 0, xCnt = 0;
         char[][] map = new char[3][3];
         
-        // board를 2D 배열로 변환하고 O, X 개수 세기
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 map[i][j] = board[i].charAt(j);
