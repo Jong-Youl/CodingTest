@@ -18,13 +18,13 @@ class Solution {
                     updateByPos(cmdArr[1], cmdArr[2], cmdArr[3], map);
                 else
                     updateByValue(cmdArr[1], cmdArr[2], map);
-            } else if (cmdArr[0].equals("MERGE")) {
-                merge(cmdArr[1], cmdArr[2], cmdArr[3], cmdArr[4], map);
-            } else if (cmdArr[0].equals("UNMERGE")) {
-                unmerge(cmdArr[1], cmdArr[2], map);
-            } else {
-                pltList.add(map[Integer.parseInt(cmdArr[1])][Integer.parseInt(cmdArr[2])]);
             }
+            else if (cmdArr[0].equals("MERGE"))
+                merge(cmdArr[1], cmdArr[2], cmdArr[3], cmdArr[4], map);
+            else if (cmdArr[0].equals("UNMERGE"))
+                unmerge(cmdArr[1], cmdArr[2], map);
+            else
+                pltList.add(map[Integer.parseInt(cmdArr[1])][Integer.parseInt(cmdArr[2])]);
         }
 
         return pltList.toArray(new String[0]);
@@ -88,7 +88,7 @@ class Solution {
             }
         }
     }
-
+    
     private void mergeCells(int r, int c, int group, String value, String[][] map) {
         if (isMerged[r][c] != 0) {
             int oldGroup = isMerged[r][c];
@@ -104,7 +104,7 @@ class Solution {
             isMerged[r][c] = group;
         }
     }
-
+    
     private void resetMergedCells(int group, String[][] map) {
         for (int i = 1; i <= 50; i++) {
             for (int j = 1; j <= 50; j++) {
