@@ -21,7 +21,7 @@ class Solution {
         
         
         // 홀수면 못나눔
-        if(total1 + total2 % 2 == 1) return -1;
+        if((total1 + total2) % 2 == 1) return -1;
         // 같으면 안움직여도 됨
         if(total1 == total2) return 0;
         // 둘 다 아닌 경우
