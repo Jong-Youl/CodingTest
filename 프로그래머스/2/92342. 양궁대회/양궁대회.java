@@ -11,10 +11,10 @@ public class Solution {
         return answer;
     }
 
-    private void dfs(final int score, final int[] apeach, int[] ryan, final int depth) {
+    private void dfs(final int arrowsCnt, final int[] apeach, int[] ryan, final int depth) {
         if (depth == 11) { // 모든 점수를 탐색한 경우
-            if (score > 0) {
-                ryan[10] += score; // 남은 화살은 0점에 모두 배치
+            if (arrowsCnt > 0) {
+                ryan[10] += arrowsCnt; // 남은 화살은 0점에 모두 배치
             }
             int ryanScore = 0, apeachScore = 0;
 
@@ -33,21 +33,21 @@ public class Solution {
                     answer = ryan.clone();
                 }
             }
-            if (score > 0) {
-                ryan[10] -= score; // 백트래킹
+            if (arrowsCnt > 0) {
+                ryan[10] -= arrowsCnt; // 백트래킹
             }
             return;
         }
 
         // 이번 점수를 이길 경우
-        if (score > apeach[depth]) {
+        if (arrowsCnt > apeach[depth]) {
             ryan[depth] = apeach[depth] + 1;
-            dfs(score - ryan[depth], apeach, ryan, depth + 1);
+            dfs(arrowsCnt - ryan[depth], apeach, ryan, depth + 1);
             ryan[depth] = 0; // 백트래킹
         }
 
         // 이번 점수를 포기할 경우
-        dfs(score, apeach, ryan, depth + 1);
+        dfs(arrowsCnt, apeach, ryan, depth + 1);
     }
 
     private boolean isBetter(final int[] curr) {
