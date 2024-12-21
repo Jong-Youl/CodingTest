@@ -1,19 +1,17 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Solution {
     private int maxDiff = 0;
     private int[] answer;
 
-    public int[] solution(int n, int[] info) {
+    public int[] solution(final int n, final int[] info) {
         answer = new int[] { -1 };
         int[] ryan = new int[11];
         dfs(n, info, ryan, 0);
         return answer;
     }
 
-    private void dfs(int score, int[] apeach, int[] ryan, int depth) {
+    private void dfs(final int score, final int[] apeach, int[] ryan, final int depth) {
         if (depth == 11) { // 모든 점수를 탐색한 경우
             if (score > 0) {
                 ryan[10] += score; // 남은 화살은 0점에 모두 배치
@@ -52,7 +50,7 @@ public class Solution {
         dfs(score, apeach, ryan, depth + 1);
     }
 
-    private boolean isBetter(int[] curr) {
+    private boolean isBetter(final int[] curr) {
         // 낮은 점수부터 비교 (더 많은 화살을 맞힌 경우 우선)
         for (int i = 10; i >= 0; i--) {
             if (curr[i] != answer[i]) {
