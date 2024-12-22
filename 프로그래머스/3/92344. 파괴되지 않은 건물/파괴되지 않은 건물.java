@@ -7,8 +7,9 @@ class Solution {
         int[][] prefixSum = calculatePrefixSum(N, M, skill);
 
         applyPrefixSum(board, prefixSum);
+        answer = getValidCnt(board);
         
-        return answer = countRemainingBuildings(board);
+        return answer;
     }
 
     private int[][] calculatePrefixSum(int N, int M, int[][] skill) {
@@ -53,16 +54,16 @@ class Solution {
         }
     }
 
-    private int countRemainingBuildings(int[][] board) {
-        int count = 0;
+    private int getValidCnt(int[][] board) {
+        int cnt = 0;
 
         for (int[] row : board) {
             for (int cell : row) {
                 if (cell > 0)
-                    count++;
+                    cnt++;
             }
         }
 
-        return count;
+        return cnt;
     }
 }
