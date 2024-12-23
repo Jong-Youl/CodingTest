@@ -1,46 +1,44 @@
 import java.util.*;
 
 class Solution {
-    private boolean [] visit;
-    private Set <Integer> set = new HashSet<>();   
-    
     public int solution(String numbers) {
         int answer = 0;
-        visit = new boolean [numbers.length()];
-        comb(0, "", numbers);
-
-        for(int num : set) {
-            if(isPrime(num)) {
+        Set<Integer> set = new HashSet<>();
+        boolean[] visit = new boolean[numbers.length()];
+        
+        comb(0, "", numbers, visit, set);
+        
+        for (int num : set) {
+            if (isPrime(num)) {
                 answer++;
-            }   
+            }
         }
+        
         return answer;
     }
-    
-    public void comb(int depth, String curr, String numbers) {
-        if(depth == numbers.length()) {
-            if(curr != "")
-                set.add(Integer.parseInt(curr));
+
+    private void comb(int depth, String curr, String numbers, boolean[] visit, Set<Integer> set) {
+        if (!curr.isEmpty()) {
+            set.add(Integer.parseInt(curr));
+        }
+        if (depth == numbers.length()) {
             return;
         }
         
-        for(int i = 0; i < numbers.length(); i++) {
-            if(curr.length() == 0 && (numbers.charAt(i) - '0') == 0)
-                continue;
-            if(!visit[i]) {
+        for (int i = 0; i < numbers.length(); i++) {
+            if (!visit[i]) {
                 visit[i] = true;
-                comb(depth + 1, curr, numbers);
-                comb(depth + 1, curr + numbers.charAt(i), numbers);
+                comb(depth + 1, curr + numbers.charAt(i), numbers, visit, set);
                 visit[i] = false;
             }
         }
     }
-    
-    public boolean isPrime(int num) {
-        if(num <= 1) return false;
-        for(int i = 2; i <= Math.sqrt(num); i ++)
-            if(num % i == 0) return false;
-        
+
+    private boolean isPrime(int num) {
+        if (num <= 1) return false;
+        for (int i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i == 0) return false;
+        }
         return true;
     }
 }
