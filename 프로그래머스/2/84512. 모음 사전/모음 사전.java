@@ -1,26 +1,7 @@
 class Solution {
-    private int answer = 0;
-    private boolean isDone = false;
-    
     public int solution(String word) {
-        char [] lst = {'A', 'E', 'I', 'O', 'U'};
-        getCnt("", lst, word);
-        
+        int answer = 0, per = 3905;
+        for(String s : word.split("")) answer += "AEIOU".indexOf(s) * (per /= 5) + 1;
         return answer;
-    }
-
-    private void getCnt(String curr, char [] lst, String word) {
-        if(curr.equals(word)){
-            isDone = true;    
-            return;
-        }
-        
-        if(curr.length() == 5) return;
-
-        for(int i = 0; i < lst.length; i++) {
-            answer++;
-            getCnt(curr + lst[i], lst, word);
-            if(isDone) return;
-        }
     }
 }
