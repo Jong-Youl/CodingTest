@@ -10,7 +10,7 @@ class Solution {
     }
 
     public void comb(int[] arr, int sum, int idx, int depth) {
-        if (depth == 3) { // 3개를 선택한 경우
+        if (depth == 3) {
             if (isPrime(sum))
                 cnt++;
             return;
