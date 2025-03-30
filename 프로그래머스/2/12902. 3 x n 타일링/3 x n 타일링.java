@@ -12,7 +12,7 @@ class Solution {
             else 
                 dp[i] = dp[i-1] * 2 % mod + dp[i-2] % mod;
 
-            dp[i] = dp[i] % mod;
+            dp[i] %= mod;
         }
         return dp[n];
     }
