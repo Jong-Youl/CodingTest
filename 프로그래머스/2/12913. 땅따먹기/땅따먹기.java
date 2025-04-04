@@ -9,13 +9,13 @@ class Solution {
         
         for (int i = 1; i < n; i++) {
             for (int j = 0; j < 4; j++) {
-                int maxPrev = 0;
+                int max = 0;
                 
                 for (int k = 0; k < 4; k++) {
                     if (k != j)
-                        maxPrev = Math.max(maxPrev, dp[i - 1][k]);
+                        max = Math.max(max, dp[i - 1][k]);
                 }
-                dp[i][j] = land[i][j] + maxPrev;
+                dp[i][j] = land[i][j] + max;
             }
         }
         
