@@ -1,0 +1,13 @@
+-- 코드를 작성해주세요
+SELECT g.SCORE, g.EMP_NO, e.EMP_NAME, e.POSITION, e.EMAIL
+FROM HR_EMPLOYEES as e
+    JOIN
+    (
+    SELECT EMP_NO, SUM(SCORE) as SCORE
+    FROM HR_GRADE
+    WHERE YEAR = "2022"
+    GROUP BY EMP_NO
+    ) as g
+    ON e.EMP_NO = g.EMP_NO
+ORDER BY g.SCORE DESC
+LIMIT 1;
