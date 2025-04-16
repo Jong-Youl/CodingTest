@@ -1,5 +1,6 @@
 -- 코드를 입력하세요
-SELECT     u.USER_ID,
+SELECT     
+    u.USER_ID,
     u.NICKNAME,
     CONCAT_WS(' ', u.CITY, u.STREET_ADDRESS1, IFNULL(u.STREET_ADDRESS2, '')) AS 전체주소,
     CONCAT(SUBSTR(u.TLNO, 1, 3), '-', SUBSTR(u.TLNO, 4, 4), '-', SUBSTR(u.TLNO, 8)) AS 전화번호
