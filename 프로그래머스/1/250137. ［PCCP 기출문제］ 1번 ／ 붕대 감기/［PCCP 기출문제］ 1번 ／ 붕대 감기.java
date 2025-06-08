@@ -1,33 +1,28 @@
 class Solution {
     public int solution(int[] bandage, int health, int[][] attacks) {
-        int maxHealth = health;
-        int idx = 0;
-        int time = 0;
-        int continueTime = 0;
+        int costTime = bandage[0];
+        int hs = bandage[1];
+        int eh = bandage[2];
+        int currHp = health;
+        int prev = 0;
         
-        while(idx < attacks.length) {
-            if(time == attacks[idx][0]) {
-                continueTime = 0;
-                health -= attacks[idx++][1];
+        for(int [] attack : attacks) {
+            // 데미지를 받은 상태라면 회복해야함
+            if(currHp < health) {
+                int diff = attack[0] - prev - 1;
                 
-                if(health <= 0)
-                    return -1;
-            }
-            else {
-                health += bandage[1];
-                continueTime++;
-                if(continueTime == bandage[0]) {
-                    continueTime = 0;
-                    health += bandage[2];
-                }
-
-                if(health > maxHealth)
-                    health = maxHealth;
+                currHp += diff * hs;
+                currHp += (diff / costTime) * eh;
+                currHp = Math.min(currHp, health); 
             }
             
-            time++;
+            prev = attack[0];
+            currHp -= attack[1];
+            
+            if(currHp <= 0)
+                break;
         }
         
-        return health;
+        return currHp > 0 ? currHp : -1;
     }
 }
