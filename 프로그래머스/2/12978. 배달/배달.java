@@ -1,80 +1,65 @@
 import java.util.*;
 
 class Solution {
-    public class Node implements Comparable <Node>{
-        int v, e;
+    
+    class Node implements Comparable<Node>{
+        int node, edge;
         
-        Node(int v, int e) {
-            this.v = v;
-            this.e = e;
+        Node(int node, int edge) {
+            this.node = node;
+            this.edge = edge;
         }
         
         @Override
         public int compareTo(Node n) {
-            return n.e - this.e;
+            return n.edge - this.edge;
         }
-        
     }
-    
     
     public int solution(int N, int[][] road, int K) {
         int answer = 0;
-        
-        /*
-            각 마을에는 1부터 N까지의 번호가 각각 하나씩 부여되어 있습니다.
-            각 마을은 양방향으로 통행
-            1번 마을에 있는 음식점에서 각 마을로 음식 배달
-            각 마을로부터 음식 주문을 받으려고 하는데, N개의 마을 중에서 K 시간 이하로 배달이 가능한 마을에서만 주문
-            다음은 N = 5, K = 3
-        */
-        
-        // init 
-        int [] dist = new int [N + 1];
         int inf = 987654321;
-        Arrays.fill(dist, inf);
-        dist[1] = 0;
-        // 인덱스 = 출발 정점, 요소 = 도착 정점
-        List<List<Node>> graph = new ArrayList<>();
-        for(int i = 0; i <= N; i++)
-            graph.add(new ArrayList<>());
         
-        for(int [] info : road) {
-            int v1 = info[0];
-            int v2 = info[1];
-            int e = info[2];
-            
-            graph.get(v1).add(new Node(v2, e));
-            graph.get(v2).add(new Node(v1, e));
+        // K 시간 이하로 배달이 가능한 마을에서만 주문을 받을 수 있음
+        // 1번 출발
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        List<List<Node>> graph = new ArrayList<>();
+        int [] cost = new int [N + 1];
+        
+        for(int i = 0; i <= N; i++) {
+            graph.add(new ArrayList<>());
+            cost[i] = inf;
         }
         
-        // 다익스트라로 함 조지기
-        dejikstra(graph, dist);
+        for(int [] info : road) {
+            graph.get(info[0]).add(new Node(info[1], info[2]));
+            graph.get(info[1]).add(new Node(info[0], info[2]));
+        }
+        
+        cost[1] = 0;
+        
+        pq.add(new Node(1, 0));
+        while (!pq.isEmpty()) {
+            Node curr = pq.poll();
+
+            if (cost[curr.node] < curr.edge)
+                continue;
+            
+            for (Node next : graph.get(curr.node)) {
+                if (cost[next.node] > cost[curr.node] + next.edge) {
+                    cost[next.node] = cost[curr.node] + next.edge;
+                    pq.add(new Node(next.node, cost[next.node]));
+                }
+            }
+        }
         
         for(int i = 1; i <= N; i++) {
-            if(dist[i] <= K)
+            if(cost[i] <= K)
                 answer++;
         }
 
         return answer;
     }
-    
-    public void dejikstra(List<List<Node>> graph, int [] dist) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(1, 0));
-        
-        while(!pq.isEmpty()) {
-            // 1에서 출발해서 도착하는 정점과 거기까지 가기 위한 시간
-            Node curr = pq.poll();
-
-            for(int i = 0; i < graph.get(curr.v).size(); i++) {
-                Node next = graph.get(curr.v).get(i);
-                
-                if(dist[next.v] > dist[curr.v] + next.e) {
-                    dist[next.v] = dist[curr.v] + next.e;
-                    pq.add(next);
-                }
-            }
-        }
-    }
-    
 }
+
+//        System.out.println("Hello Java");
