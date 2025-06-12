@@ -2,31 +2,31 @@ import java.util.*;
 
 class Solution {
     List<String> route = new ArrayList<>();
-    boolean[] visit;
-    int size;
+    Map<String, PriorityQueue<String>> map = new HashMap<>();
+
     public String[] solution(String[][] tickets) {
-        List<String> result = new ArrayList<>();
-        size = tickets.length;
-        visit = new boolean[size];
+        for (String[] ticket : tickets) {
+            PriorityQueue <String> pq;
+            if(!map.containsKey(ticket[0])) {
+                pq = new PriorityQueue<>();
+            }
+            else {
+                pq = map.get(ticket[0]);
+            }
+            pq.add(ticket[1]);
+            map.put(ticket[0], pq);
+        }
 
-        Arrays.sort(tickets, (a, b) -> a[1].compareTo(b[1]));
-        dfs("ICN", "ICN", tickets, 0);
+        dfs("ICN");
 
-        return route.get(0).split(" ");
+        return route.toArray(new String[0]);
     }
 
-    public void dfs(String curr, String path, String[][] tickets, int cnt) {
-        if (cnt == size) {
-            route.add(path);
-            return;
+    void dfs(String airport) {
+        PriorityQueue<String> dests = map.get(airport);
+        while (dests != null && !dests.isEmpty()) {
+            dfs(dests.poll());
         }
-
-        for (int i = 0; i < size; i++) {
-            if (!visit[i] && tickets[i][0].equals(curr)) {
-                visit[i] = true;
-                dfs(tickets[i][1], path + " " + tickets[i][1], tickets, cnt + 1);
-                visit[i] = false;
-            }
-        }
+        route.add(0, airport); // 역순으로 넣음 (post-order)
     }
 }
